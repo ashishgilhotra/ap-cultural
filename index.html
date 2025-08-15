@@ -46,20 +46,30 @@
             padding: 2rem;
             border-right: 1px solid #d4d4d4;
             transition: transform 0.3s ease-in-out;
+            position: fixed;
+            z-index: 50;
+            height: 100%;
+        }
+        
+        /* Default mobile menu state */
+        .nav-menu {
+            transform: translateX(-100%);
         }
 
-        /* Mobile menu toggle */
-        @media (max-width: 768px) {
+        /* Active mobile menu state */
+        .nav-menu.active {
+            transform: translateX(0);
+        }
+
+        /* Desktop menu state */
+        @media (min-width: 768px) {
             .nav-menu {
-                transform: translateX(-100%);
-                position: fixed;
-                height: 100%;
-                z-index: 50;
-            }
-            .nav-menu.active {
-                transform: translateX(0);
+                transform: translateX(0%);
+                position: relative;
+                height: auto;
             }
         }
+
 
         .nav-item {
             display: block;
@@ -87,7 +97,26 @@
             padding: 2rem;
             overflow-y: auto;
             position: relative;
+            /* New: Center the content on larger screens and give it a max width */
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
         }
+        
+        /* Mobile menu toggle */
+        .menu-toggle {
+            display: flex;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 60;
+        }
+        @media (min-width: 768px) {
+            .menu-toggle {
+                display: none;
+            }
+        }
+
 
         /* Marquee effect */
         .marquee-container {
@@ -176,13 +205,21 @@
             transform: translateY(-2px);
         }
         
-        /* FIX: Made the grid fully responsive */
         #apartment-grid {
+            /* CORRECTED FIX: Use responsive units for columns while maintaining the 11x15 structure */
             display: grid;
-            /* Use fractional units to make all columns equal and fit within the container */
-            grid-template-columns: repeat(15, 1fr);
-            grid-template-rows: repeat(11, 1fr);
-            gap: 0.25rem; /* 1/4th of a rem */
+            /* Each column will take up an equal fraction of the available space */
+            grid-template-columns: repeat(15, minmax(60px, 1fr));
+            grid-template-rows: repeat(11, 60px); /* 11 rows, each 60px high */
+            gap: 0.25rem;
+        }
+        
+        /* The container for the grid should handle the overflow */
+        .apartment-grid-container {
+            overflow-x: auto;
+            max-width: 100%;
+            -webkit-overflow-scrolling: touch; /* for smooth scrolling on iOS */
+            padding-bottom: 1rem; /* Space for the scrollbar */
         }
     </style>
 </head>
@@ -192,7 +229,7 @@
     <div class="main-container">
 
         <!-- Mobile Menu Button -->
-        <button id="menu-toggle" class="md:hidden fixed top-4 left-4 z-[60] p-2 rounded-full bg-white shadow-lg text-slate-700">
+        <button id="menu-toggle" class="menu-toggle p-2 rounded-full bg-white shadow-lg text-slate-700">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
@@ -264,7 +301,7 @@
                                 <span>Date: 27th Aug, 2025 - 6th Sep, 2025</span>
                             </div>
                             <div class="flex items-center text-gray-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <svg xmlns="http://www.w3.org/2d000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                 </svg>
                                 <span>Location: Society Clubhouse</span>
@@ -283,7 +320,7 @@
                                 <span>Date: 22nd Sep, 2025 - 2nd Oct, 2025</span>
                             </div>
                             <div class="flex items-center text-gray-500">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                <svg xmlns="http://www.w3.org/2d000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                                     <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                                 </svg>
                                 <span>Location: Society Clubhouse</span>
@@ -349,9 +386,10 @@
                     <span>Fetching data from the spreadsheet...</span>
                 </div>
 
-                <div class="w-full">
+                <!-- Corrected: Wrap the apartment grid in a new div with overflow-x-auto -->
+                <div class="apartment-grid-container w-full p-2 rounded-[3rem] bg-white shadow-lg border-4 border-indigo-200">
                     <!-- Apartment Grid - Refined with new styling -->
-                    <div id="apartment-grid" class="p-2 rounded-[3rem] bg-white shadow-lg border-4 border-indigo-200">
+                    <div id="apartment-grid">
                         <!-- Tiles will be dynamically inserted here by JavaScript -->
                     </div>
                 </div>
@@ -577,7 +615,7 @@
                         const tile = document.createElement('div');
                         // New styling for the tiles, with a hover effect for better user experience
                         tile.classList.add(
-                            'w-full', 'aspect-square', 'rounded-xl', 'shadow-sm', 'flex', 'flex-col', 'items-center',
+                            'w-full', 'h-full', 'rounded-xl', 'shadow-sm', 'flex', 'flex-col', 'items-center',
                             'justify-center', 'font-medium', 'transition-all', 'text-center',
                             'duration-300', 'ease-in-out', 'border', 'border-gray-200', 'cursor-pointer',
                             'transform', 'hover:scale-105', 'hover:shadow-lg'
@@ -680,7 +718,7 @@
                         <span>Date: ${programme.date}</span>
                     </div>
                     <div class="flex items-center text-gray-500 text-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <svg xmlns="http://www.w3.org/2d000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
                             <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
                         </svg>
                         <span>Location: ${programme.location}</span>
