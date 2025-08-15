@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aeropolis Cultural Committee</title>
+    <!-- Use Tailwind CSS for easy styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- New custom font for a more elegant feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #4a4a4a;
+            /* New, vibrant color scheme with a subtle background image */
+            background: #e6eefc; /* A soft background color */
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+            background: url('https://placehold.co/1920x1080/f0e6ff/7f5e9c?text=Cultural+Patterns') no-repeat center center fixed;
+            background-size: cover;
+            position: relative;
+            z-index: 0;
+        }
+
+        .main-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(240, 240, 250, 0.85); /* Semi-transparent overlay for readability */
+            backdrop-filter: blur(2px);
+            z-index: -1;
+        }
+
+        .nav-menu {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            border-right: 1px solid #d4d4d4;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        /* Mobile menu toggle */
+        @media (max-width: 768px) {
+            .nav-menu {
+                transform: translateX(-100%);
+                position: fixed;
+                height: 100%;
+                z-index: 50;
+            }
+            .nav-menu.active {
+                transform: translateX(0);
+            }
+        }
+
+        .nav-item {
+            display: block;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #7f5e9c; /* A rich purple for links */
+            background-color: #f0e6ff; /* Light purple background */
+            border-radius: 9999px; /* Pill shape */
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background-color: #7f5e9c;
+            color: #ffffff;
+            box-shadow: 0 4px 10px rgba(127, 94, 156, 0.3);
+            transform: scale(1.05);
+        }
+
+        .content-area {
+            flex-grow: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        /* Marquee effect */
+        .marquee-container {
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+        }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 20s linear infinite;
+        }
+
+        @keyframes marquee {
+            0%   { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Styling for the modals */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.show-modal {
+            display: flex;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease-out;
+            border: 2px solid #7f5e9c;
+            position: relative;
+        }
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            font-weight: bold;
+            color: #b3a5c2;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .close-button:hover, .close-button:focus {
+            color: #7f5e9c;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .toggle-btn {
+            background-color: #f0e6ff;
+            color: #7f5e9c;
+            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 9999px;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            border: none;
+            outline: none;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .toggle-btn:hover {
+            background-color: #d8c2f1;
+        }
+        .toggle-btn.active {
+            background-color: #7f5e9c;
+            color: white;
+            box-shadow: 0 4px 10px rgba(127, 94, 156, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* FIX: Made the grid fully responsive */
+        #apartment-grid {
+            display: grid;
+            /* Use fractional units to make all columns equal and fit within the container */
+            grid-template-columns: repeat(15, 1fr);
+            grid-template-rows: repeat(11, 1fr);
+            gap: 0.25rem; /* 1/4th of a rem */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Main Application Container -->
+    <div class="main-container">
+
+        <!-- Mobile Menu Button -->
+        <button id="menu-toggle" class="md:hidden fixed top-4 left-4 z-[60] p-2 rounded-full bg-white shadow-lg text-slate-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+
+        <!-- Left-hand Navigation Menu -->
+        <div id="nav-menu" class="nav-menu">
+            <h2 class="text-4xl font-extrabold text-indigo-900 mb-8">Aeropolis</h2>
+            <nav>
+                <ul>
+                    <li><button class="nav-item active" data-page="home">Home</button></li>
+                    <li><button class="nav-item" data-page="donation-tracker">Donation Tracker</button></li>
+                    <li><button class="nav-item" data-page="team">Our Team</button></li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="content-area">
+            
+            <!-- --- Home Page Section (Updated with new programme list) --- -->
+            <div id="home" class="page-content">
+                <!-- Introduction Section -->
+                <div class="bg-white p-8 rounded-[3rem] shadow-2xl mb-8 border border-gray-200">
+                    <h1 class="text-5xl font-bold text-indigo-900 mb-4">Aeropolis Phase Cultural Committee</h1>
+                    <p class="text-lg text-gray-700 leading-relaxed">
+                        Our housing society is more than just a collection of homes — it’s a vibrant community where traditions are celebrated, talents are nurtured, and togetherness is cherished. The Cultural Committee is at the heart of this spirit, bringing residents together through joyful, meaningful, and memorable events all year round.
+                        From the devotion of Ganpati and the colours of Holi, to the rhythms of Navratri and the joy of Janmashtami, we celebrate every festival with enthusiasm, creativity, and unity. Our events blend tradition with fun — hosting kids’ competitions, cultural performances, games, and engaging activities for all age groups.
+                        Every gathering is an opportunity to laugh, connect, and create lasting memories. Through these celebrations, we aim to strengthen our bonds as neighbours, honour our diverse heritage, and ensure that our community remains as lively as the festivals we love.
+                        Here, every celebration is a shared story — and everyone is a part of it.
+                    </p>
+                </div>
+
+                <!-- Upcoming Programmes Section (Dynamically handled with a modal) -->
+                <div class="bg-white p-8 rounded-[3rem] shadow-2xl mb-8 border border-gray-200">
+                    <h2 class="text-4xl font-bold text-indigo-900 mb-4">Upcoming Programmes</h2>
+                    <p class="text-base text-gray-600 mb-6">
+                        Check out the upcoming events and get involved! Click on an event for more details.
+                    </p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Programme Card 1 (Janamasthami) -->
+                        <div class="bg-gradient-to-br from-purple-100 to-pink-100 p-6 rounded-3xl shadow-lg border border-purple-200 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105"  
+                            onclick="showProgrammeDetails(0)">
+                            <h3 class="text-xl font-bold text-indigo-800 mb-2">Janamasthami Utsav</h3>
+                            <p class="text-sm text-gray-600 mb-4">Celebrating Janmashtami with devotion, vibrant performances, and the thrill of the Dahi Handi!</p>
+                            <div class="flex items-center text-gray-500 mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Date: 16th August, 2025</span>
+                            </div>
+                            <div class="flex items-center text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Location: Society Garden</span>
+                            </div>
+                        </div>
+
+                        <!-- Programme Card 2 (Ganpati) -->
+                        <div class="bg-gradient-to-br from-yellow-100 to-orange-100 p-6 rounded-3xl shadow-lg border border-yellow-200 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105"
+                             onclick="showProgrammeDetails(1)">
+                            <h3 class="text-xl font-bold text-orange-800 mb-2">Ganpati Utsav</h3>
+                            <p class="text-sm text-gray-600 mb-4">Welcoming Bappa with devotion, music, and festive togetherness.</p>
+                            <div class="flex items-center text-gray-500 mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Date: 27th Aug, 2025 - 6th Sep, 2025</span>
+                            </div>
+                            <div class="flex items-center text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Location: Society Clubhouse</span>
+                            </div>
+                        </div>
+
+                        <!-- Programme Card 3 (Navratri) -->
+                        <div class="bg-gradient-to-br from-green-100 to-teal-100 p-6 rounded-3xl shadow-md border border-green-200 cursor-pointer transition-all duration-300 hover:shadow-2xl hover:scale-105"
+                             onclick="showProgrammeDetails(2)">
+                            <h3 class="text-xl font-bold text-teal-800 mb-2">Navratri Utsav</h3>
+                            <p class="text-sm text-gray-600 mb-4">Nine nights of devotion, dance, and dazzling dandiya beats.</p>
+                            <div class="flex items-center text-gray-500 mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Date: 22nd Sep, 2025 - 2nd Oct, 2025</span>
+                            </div>
+                            <div class="flex items-center text-gray-500">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Location: Society Clubhouse</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Our Journey Section -->
+                <div class="bg-white p-8 rounded-[3rem] shadow-2xl border border-gray-200">
+                    <h2 class="text-4xl font-bold text-indigo-900 mb-4">Our Journey</h2>
+                    <p class="text-base text-gray-600 mb-6">
+                        Here are some of the moments we've shared together, celebrating milestones and building our community.
+                    </p>
+                    <div class="marquee-container">
+                        <div class="marquee-content flex space-x-6">
+                            <img src="https://placehold.co/300x200/d8c2f1/7f5e9c?text=Cultural+Event+1" class="rounded-3xl shadow-xl flex-shrink-0" alt="Community Event 1">
+                            <img src="https://placehold.co/300x200/d8c2f1/7f5e9c?text=Cultural+Event+2" class="rounded-3xl shadow-xl flex-shrink-0" alt="Community Event 2">
+                            <img src="https://placehold.co/300x200/d8c2f1/7f5e9c?text=Cultural+Event+3" class="rounded-3xl shadow-xl flex-shrink-0" alt="Community Event 3">
+                            <img src="https://placehold.co/300x200/d8c2f1/7f5e9c?text=Cultural+Event+4" class="rounded-3xl shadow-xl flex-shrink-0" alt="Community Event 4">
+                            <img src="https://placehold.co/300x200/d8c2f1/7f5e9c?text=Cultural+Event+5" class="rounded-3xl shadow-xl flex-shrink-0" alt="Community Event 5">
+                            <img src="https://placehold.co/300x200/d8c2f1/7f5e9c?text=Cultural+Event+6" class="rounded-3xl shadow-xl flex-shrink-0" alt="Community Event 6">
+                            <!-- Duplicate images for seamless loop -->
+                            <img src="https://placehold.co/300x200/d8c2f1/7f5e9c?text=Cultural+Event+1" class="rounded-3xl shadow-xl flex-shrink-0" alt="Community Event 1">
+                            <img src="https://placehold.co/300x200/d8c2f1/7f5e9c?text=Cultural+Event+2" class="rounded-3xl shadow-xl flex-shrink-0" alt="Community Event 2">
+                            <img src="https://placehold.co/300x200/d8c2f1/7f5e9c?text=Cultural+Event+3" class="rounded-3xl shadow-xl flex-shrink-0" alt="Community Event 3">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- --- Donation Tracker Section (Original content) --- -->
+            <div id="donation-tracker" class="page-content hidden">
+                <div class="bg-white p-8 rounded-[3rem] shadow-2xl mb-8 border border-gray-200 text-center">
+                    <h1 class="text-5xl font-bold text-indigo-900 mb-4">Aeropolis Phase 2 - Donation Tracker</h1>
+                    <p class="text-lg font-light text-gray-600 mb-2">
+                        Total Donations Received as of <span id="current-date" class="font-semibold"></span>:
+                        <span id="total-amount" class="text-3xl font-extrabold text-indigo-600 ml-2"></span>
+                    </p>
+                    <p class="text-base font-light text-gray-600 mt-2">
+                        Donated: <span id="donation-count" class="font-bold text-indigo-600">0</span> of <span id="total-flats" class="font-bold text-gray-600">0</span> Apartments
+                    </p>
+                    <p class="text-sm font-light text-gray-400 mt-2">
+                        Last updated: <span id="last-updated-time"></span>
+                    </p>
+                    
+                    <!-- Toggle Button for Wings -->
+                    <div class="mt-6 flex flex-col items-center space-y-2">
+                        <span class="font-semibold text-gray-700">Select Apartment Wing:</span>
+                        <div class="inline-flex rounded-full bg-gray-200 p-1">
+                            <button id="toggle-E" class="toggle-btn active">Wing E</button>
+                            <button id="toggle-D" class="toggle-btn">Wing D</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Loading Spinner - Now centrally located -->
+                <div id="loading-spinner" class="flex items-center justify-center space-x-2 text-gray-400 mb-8 hidden">
+                    <svg class="animate-spin h-6 w-6 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>Fetching data from the spreadsheet...</span>
+                </div>
+
+                <div class="w-full">
+                    <!-- Apartment Grid - Refined with new styling -->
+                    <div id="apartment-grid" class="p-2 rounded-[3rem] bg-white shadow-lg border-4 border-indigo-200">
+                        <!-- Tiles will be dynamically inserted here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- --- Our Team Section (Redesigned) --- -->
+            <div id="team" class="page-content hidden">
+                <div class="bg-white p-8 rounded-[3rem] shadow-2xl mb-8 border border-gray-200">
+                    <h1 class="text-5xl font-bold text-indigo-900 mb-4">Our Team</h1>
+                    <p class="text-lg text-gray-700 mb-6">
+                        Meet the dedicated volunteers who make our community vibrant. Their passion and hard work bring our cultural celebrations to life all year round.
+                    </p>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        <!-- Team Member Card 1 (Redesigned) -->
+                        <div class="bg-purple-50 p-6 rounded-3xl shadow-md text-center transition-all duration-300 hover:shadow-xl hover:scale-105 border border-purple-200">
+                            <img src="https://placehold.co/150x150/d8c2f1/7f5e9c?text=John" alt="Team Member 1" class="rounded-full w-24 h-24 mx-auto mb-4 object-cover border-4 border-purple-300">
+                            <h3 class="text-xl font-bold text-indigo-800">John Doe</h3>
+                            <p class="text-base text-purple-600 font-semibold">Community Head</p>
+                        </div>
+                        <!-- Team Member Card 2 (Redesigned) -->
+                        <div class="bg-yellow-50 p-6 rounded-3xl shadow-md text-center transition-all duration-300 hover:shadow-xl hover:scale-105 border border-yellow-200">
+                            <img src="https://placehold.co/150x150/fde0a3/d18a00?text=Jane" alt="Team Member 2" class="rounded-full w-24 h-24 mx-auto mb-4 object-cover border-4 border-yellow-300">
+                            <h3 class="text-xl font-bold text-orange-800">Jane Smith</h3>
+                            <p class="text-base text-yellow-600 font-semibold">Treasurer</p>
+                        </div>
+                        <!-- Team Member Card 3 (Redesigned) -->
+                        <div class="bg-green-50 p-6 rounded-3xl shadow-md text-center transition-all duration-300 hover:shadow-xl hover:scale-105 border border-green-200">
+                            <img src="https://placehold.co/150x150/b9f6ca/3c9a4e?text=Peter" alt="Team Member 3" class="rounded-full w-24 h-24 mx-auto mb-4 object-cover border-4 border-green-300">
+                            <h3 class="text-xl font-bold text-teal-800">Peter Jones</h3>
+                            <p class="text-base text-green-600 font-semibold">Events Coordinator</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- Message Box (replaces alert()) -->
+    <div id="message-box" class="fixed inset-x-0 bottom-4 flex justify-center hidden">
+        <div class="bg-red-500 text-white p-4 rounded-lg shadow-lg">
+            <p id="message-text"></p>
+        </div>
+    </div>
+
+    <!-- Modal for detailed apartment information -->
+    <div id="info-modal" class="modal-overlay">
+        <div class="modal-content relative">
+            <span class="close-button" onclick="closeModal('info-modal')">&times;</span>
+            <h2 id="info-modal-title" class="text-3xl font-bold text-indigo-900 mb-4">Apartment Details</h2>
+            <div id="info-modal-body" class="text-gray-700">
+                <!-- Details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- New Modal for detailed programme information -->
+    <div id="programme-modal" class="modal-overlay">
+        <div class="modal-content relative">
+            <span class="close-button" onclick="closeModal('programme-modal')">&times;</span>
+            <h2 id="programme-modal-title" class="text-3xl font-bold text-indigo-900 mb-4">Programme Details</h2>
+            <div id="programme-modal-body" class="text-gray-700 space-y-4">
+                <!-- Details will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Use a self-invoking function to keep variables out of the global scope
+        (async function() {
+            // --- Configuration and Constants ---
+            const BASE_GOOGLE_SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS4BeM4ha9wTdX-ScDVTRVplqmaEMcMCpsQMNb014ULJV8A5Ig9qNJE5it3NX28b3vyjFZ3tPRB9_5R/pub';
+
+            // --- IMPORTANT: Update these GIDs with your actual sheet Group IDs ---
+            const SHEET_E_GID = '0'; // Placeholder for Sheet 'E'
+            const SHEET_D_GID = '1006450505'; // Placeholder for Sheet 'D'
+
+            // We're using a proxy to handle the redirect issue.
+            const PROXY_URL = 'https://api.allorigins.win/raw?url=';
+            
+            const totalFloors = 11; // Swapped to match the user's request for 11 rows
+            const flatsPerFloor = 15; // Swapped to match the user's request for 15 columns
+            const totalFlats = totalFloors * flatsPerFloor;
+            const updateInterval = 5 * 60 * 1000; // 5 minutes in milliseconds
+
+            const gridContainer = document.getElementById('apartment-grid');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const messageBox = document.getElementById('message-box');
+            const messageText = document.getElementById('message-text');
+            const infoModal = document.getElementById('info-modal');
+            const infoModalTitle = document.getElementById('info-modal-title');
+            const infoModalBody = document.getElementById('info-modal-body');
+            const programmeModal = document.getElementById('programme-modal');
+            const programmeModalTitle = document.getElementById('programme-modal-title');
+            const programmeModalBody = document.getElementById('programme-modal-body');
+            const totalAmountEl = document.getElementById('total-amount');
+            const currentDateEl = document.getElementById('current-date');
+            const lastUpdatedTimeEl = document.getElementById('last-updated-time');
+            const toggleButtonE = document.getElementById('toggle-E');
+            const toggleButtonD = document.getElementById('toggle-D');
+            const donationCountEl = document.getElementById('donation-count');
+            const totalFlatsEl = document.getElementById('total-flats');
+            const navButtons = document.querySelectorAll('.nav-item');
+            const pageContents = document.querySelectorAll('.page-content');
+            const menuToggle = document.getElementById('menu-toggle');
+            const navMenu = document.getElementById('nav-menu');
+
+            let dataMap = new Map();
+            let currentSheetGID = SHEET_E_GID; // Default to sheet 'E'
+            let updateIntervalId; // Variable to hold the interval ID
+
+            // --- NEW: Programme Data (from the user's latest request) ---
+            const programmes = [
+                {
+                    title: 'Janamasthami Utsav',
+                    details: 'Celebrating Janmashtami with devotion, vibrant performances, and the thrill of the Dahi Handi!',
+                    date: '16th August, 2025',
+                    location: 'Society Garden'
+                },
+                {
+                    title: 'Ganpati Utsav',
+                    details: `27 August 2025 (Wednesday)\n\nProcession: Morning 10:30 AM\n\nPran Pratishtha (Idol Installation Ceremony): Afternoon 12:00 PM\n\n30 & 31 August 2025 (Saturday & Sunday)\n\nCultural Program: Evening 8:00 PM\n\n31 August 2025 (Sunday)\n\nShri Satyanarayan Pooja: Morning 11:00 AM\n\n05 September 2025 (Friday)\n\nMahaprasad: Night 8:00 PM\n\n06 September 2025 (Saturday)\n\nGrand Visarjan Procession: Evening 5:00 PM\n\nDaily:\n\nMorning Aarti: 8:00 AM\n\nEvening Aarti: 8:00 PM`,
+                    date: '27th Aug, 2025 - 6th Sep, 2025',
+                    location: 'Society Clubhouse'
+                },
+                {
+                    title: 'Navratri Utsav',
+                    details: 'Nine nights of devotion, dance, and dazzling dandiya beats.',
+                    date: '22nd Sep, 2025 - 2nd Oct, 2025',
+                    location: 'Society Clubhouse'
+                }
+            ];
+
+            // --- Helper Functions ---
+            function showMessage(message, type = 'error') {
+                messageText.textContent = message;
+                messageBox.classList.remove('hidden');
+                if (type === 'success') {
+                    messageBox.classList.remove('bg-red-500');
+                    messageBox.classList.add('bg-green-500');
+                } else {
+                    messageBox.classList.remove('bg-green-500');
+                    messageBox.classList.add('bg-red-500');
+                }
+                setTimeout(() => {
+                    messageBox.classList.add('hidden');
+                }, 5000);
+            }
+
+            function csvToJson(csvText) {
+                console.log('Raw CSV Text:', csvText);
+                const lines = csvText.split('\n');
+                if (lines.length === 0) return [];
+
+                const headers = lines[0].split(',').map(header => header.trim());
+                const result = [];
+
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (line === '') continue;
+
+                    const values = line.split(',').map(value => value.trim());
+                    const obj = {};
+                    for (let j = 0; j < headers.length; j++) {
+                        obj[headers[j]] = values[j];
+                    }
+                    result.push(obj);
+                }
+                console.log('Parsed JSON Data:', result);
+                return result;
+            }
+
+            async function loadData() {
+                loadingSpinner.classList.remove('hidden');
+                let csvText = '';
+                
+                // Construct the URL based on the currently selected sheet's GID
+                const dataSourceUrl = `${PROXY_URL}${encodeURIComponent(`${BASE_GOOGLE_SHEET_URL}?gid=${currentSheetGID}&single=true&output=csv`)}`;
+                console.log(`Attempting to fetch data from: ${dataSourceUrl}`);
+
+                try {
+                    const response = await fetch(dataSourceUrl);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    csvText = await response.text();
+                    console.log(`Successfully fetched data from Google Sheet with GID: ${currentSheetGID}!`);
+                } catch (error) {
+                    console.error('Error fetching data from Google Sheet:', error);
+                    showMessage(`Failed to connect to your Google Sheet. Error: ${error.message}. Please check your internet connection or the spreadsheet URL.`, 'error');
+                    return [];
+                } finally {
+                    loadingSpinner.classList.add('hidden');
+                }
+                
+                try {
+                    const jsonData = csvToJson(csvText);
+                    return jsonData;
+                } catch (jsonError) {
+                    console.error('Error parsing CSV to JSON:', jsonError);
+                    showMessage('The data was loaded but could not be parsed. Please check the format of your CSV data.', 'error');
+                    return [];
+                }
+            }
+
+            function renderApartmentGrid(apartmentData) {
+                gridContainer.innerHTML = ''; // Clear existing tiles
+                console.log(`Rendering grid with ${apartmentData.length} data entries.`);
+
+                dataMap = new Map();
+                apartmentData.forEach(item => {
+                    // Check if the FlatNumber is a valid key before adding
+                    if (item.FlatNumber) {
+                        dataMap.set(item.FlatNumber, item);
+                    }
+                });
+
+                for (let floor = 1; floor <= totalFloors; floor++) {
+                    for (let flat = 1; flat <= flatsPerFloor; flat++) {
+                        const flatNumber = `${floor}${flat.toString().padStart(2, '0')}`;
+                        const apartment = dataMap.get(flatNumber);
+
+                        const tile = document.createElement('div');
+                        // New styling for the tiles, with a hover effect for better user experience
+                        tile.classList.add(
+                            'w-full', 'aspect-square', 'rounded-xl', 'shadow-sm', 'flex', 'flex-col', 'items-center',
+                            'justify-center', 'font-medium', 'transition-all', 'text-center',
+                            'duration-300', 'ease-in-out', 'border', 'border-gray-200', 'cursor-pointer',
+                            'transform', 'hover:scale-105', 'hover:shadow-lg'
+                        );
+
+                        let hasDonation = false;
+                        if (apartment && apartment.Amount && apartment.Amount.trim() !== '') {
+                            hasDonation = true;
+                            // A vibrant lime green for donations
+                            tile.classList.add('bg-lime-500', 'text-white');
+                        } else {
+                            // A soft gray for no donations
+                            tile.classList.add('bg-gray-100', 'text-slate-500');
+                        }
+                        
+                        const flatNumberDiv = document.createElement('div');
+                        // Smaller text size for the flat number
+                        flatNumberDiv.classList.add('text-xs', 'font-bold');
+                        flatNumberDiv.textContent = flatNumber;
+                        tile.appendChild(flatNumberDiv);
+
+                        if (hasDonation) {
+                            const donationDiv = document.createElement('div');
+                            // Now allows the text to break into a new line
+                            donationDiv.classList.add('text-[10px]', 'whitespace-normal', 'break-words', 'px-1');
+                            donationDiv.innerHTML = 'Donation<br>made!';
+                            tile.appendChild(donationDiv);
+                        }
+
+                        tile.addEventListener('click', () => showApartmentDetails(flatNumber));
+                        
+                        gridContainer.appendChild(tile);
+                    }
+                }
+            }
+            
+            // Generic function to open a modal
+            function showModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.add('show-modal');
+                }
+            }
+
+            // Generic function to close a modal
+            window.closeModal = function(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('show-modal');
+                }
+            }
+
+            // Function to show apartment details in a modal
+            function showApartmentDetails(flatNumber) {
+                const apartment = dataMap.get(flatNumber) || { FlatNumber: flatNumber, OwnerName: '', Amount: '', Mode: '' };
+
+                infoModalTitle.textContent = `Flat ${apartment.FlatNumber}`;
+                
+                let detailsHtml = '';
+
+                // Refined modal message for apartments with no donations
+                if (!apartment.OwnerName && !apartment.Amount && !apartment.Mode) {
+                    detailsHtml = `
+                        <div class="flex flex-col items-center justify-center space-y-4 text-center p-4">
+                            <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 012 2v2m-4 5v-2a2 2 0 012-2h2a2 2 0 012 2v2m-6 0v-2a2 2 0 012-2h2a2 2 0 012 2v2"></path>
+                            </svg>
+                            <p class="text-xl font-semibold text-gray-500">No donation recorded yet.</p>
+                            <p class="text-sm text-gray-400">This flat has not made a donation.</p>
+                        </div>
+                    `;
+                } else {
+                    detailsHtml = '<ul class="list-disc list-inside space-y-2">';
+                    if (apartment.OwnerName && apartment.OwnerName.trim() !== '') detailsHtml += `<li><span class="font-semibold">Owner Name:</span> ${apartment.OwnerName}</li>`;
+                    if (apartment.Amount && apartment.Amount.trim() !== '') detailsHtml += `<li><span class="font-semibold">Amount:</span> ${apartment.Amount}</li>`;
+                    if (apartment.Mode && apartment.Mode.trim() !== '') detailsHtml += `<li><span class="font-semibold">Mode:</span> ${apartment.Mode.toUpperCase()}</li>`;
+                    detailsHtml += '</ul>';
+                }
+                
+                infoModalBody.innerHTML = detailsHtml;
+                showModal('info-modal');
+            }
+
+            // Function to show the programme details modal
+            window.showProgrammeDetails = function(index) {
+                const programme = programmes[index];
+                if (!programme) {
+                    console.error('Programme not found for index:', index);
+                    return;
+                }
+                
+                programmeModalTitle.textContent = programme.title;
+                // Use innerHTML to handle line breaks for the Ganpati Utsav details
+                programmeModalBody.innerHTML = `
+                    <p class="text-base font-medium">${programme.details.replace(/\n/g, '<br>')}</p>
+                    <div class="flex items-center text-gray-500 text-sm mb-1 mt-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Date: ${programme.date}</span>
+                    </div>
+                    <div class="flex items-center text-gray-500 text-sm">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Location: ${programme.location}</span>
+                    </div>
+                `;
+                showModal('programme-modal');
+            }
+            
+            function updateSummary(apartmentData) {
+                // Calculate total amount
+                const total = apartmentData.reduce((sum, flat) => {
+                    const amount = parseFloat(flat.Amount);
+                    return isNaN(amount) ? sum : sum + amount;
+                }, 0);
+
+                totalAmountEl.textContent = `₹${total.toLocaleString('en-IN')}`;
+
+                // Calculate donation count
+                const donationCount = apartmentData.filter(flat => flat.Amount && flat.Amount.trim() !== '').length;
+                donationCountEl.textContent = donationCount;
+                totalFlatsEl.textContent = totalFlats;
+
+                currentDateEl.textContent = new Date().toLocaleDateString('en-IN', {
+                    year: 'numeric', month: 'long', day: 'numeric'
+                });
+            }
+
+            function updateLastUpdatedTime() {
+                lastUpdatedTimeEl.textContent = new Date().toLocaleTimeString('en-US', {
+                    hour: '2-digit', minute: '2-digit'
+                });
+            }
+
+            function handleSheetToggle(selectedWing) {
+                currentSheetGID = selectedWing === 'E' ? SHEET_E_GID : SHEET_D_GID;
+                
+                // Update button styles
+                if (selectedWing === 'E') {
+                    toggleButtonE.classList.add('active');
+                    toggleButtonD.classList.remove('active');
+                } else {
+                    toggleButtonD.classList.add('active');
+                    toggleButtonE.classList.remove('active');
+                }
+
+                // Fetch and update data for the new sheet
+                fetchAndUpdate();
+            }
+            
+            // Encapsulate the core update logic into a single function
+            async function fetchAndUpdate() {
+                console.log('Starting data fetch and update cycle...');
+                const apartmentData = await loadData();
+                if (apartmentData.length > 0) {
+                    renderApartmentGrid(apartmentData);
+                    updateSummary(apartmentData);
+                    updateLastUpdatedTime();
+                    console.log('Data successfully processed and rendered.');
+                } else {
+                    console.log('No data to process. Clearing grid and summary.');
+                    // Clear the grid and summary if data load fails
+                    gridContainer.innerHTML = '';
+                    totalAmountEl.textContent = '₹0';
+                    donationCountEl.textContent = '0';
+                    totalFlatsEl.textContent = totalFlats;
+                }
+            }
+
+            // Function to handle page navigation
+            function showPage(pageId) {
+                // Hide all page sections
+                pageContents.forEach(page => page.classList.add('hidden'));
+
+                // Show the requested page
+                document.getElementById(pageId).classList.remove('hidden');
+
+                // Update active navigation button styles
+                navButtons.forEach(button => {
+                    if (button.dataset.page === pageId) {
+                        button.classList.add('active');
+                    } else {
+                        button.classList.remove('active');
+                    }
+                });
+                
+                // Hide mobile menu after selection
+                if (window.innerWidth <= 768) {
+                    navMenu.classList.remove('active');
+                }
+
+                // Clear and restart the interval if it's the donation tracker page
+                if (pageId === 'donation-tracker') {
+                    // Fetch data immediately when navigating to the tracker page
+                    fetchAndUpdate();
+                    // Set up the recurring update
+                    if (updateIntervalId) {
+                        clearInterval(updateIntervalId);
+                    }
+                    updateIntervalId = setInterval(fetchAndUpdate, updateInterval);
+                } else {
+                    // Clear the interval when navigating away
+                    if (updateIntervalId) {
+                        clearInterval(updateIntervalId);
+                    }
+                }
+            }
+            
+            // Mobile menu toggle
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+
+            // Add event listener to close modals when clicking outside the content
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.addEventListener('click', (event) => {
+                    if (event.target === modal) {
+                        closeModal(modal.id);
+                    }
+                });
+            });
+
+            // --- Main Execution Flow ---
+            // Set up event listeners for navigation buttons
+            navButtons.forEach(button => {
+                button.addEventListener('click', () => showPage(button.dataset.page));
+            });
+            
+            // Set up event listeners for the wing toggle buttons (only within the donation tracker page)
+            if (toggleButtonE && toggleButtonD) {
+                toggleButtonE.addEventListener('click', () => handleSheetToggle('E'));
+                toggleButtonD.addEventListener('click', () => handleSheetToggle('D'));
+            }
+
+            // Initially show the home page
+            showPage('home');
+        })();
+    </script>
+</body>
+</html>
